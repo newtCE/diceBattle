@@ -22,6 +22,7 @@ function gameLoop(){
 	gameState="battle 1";
 	let enemyMonster=enemyConstructor(questPath[0],gameState);
 	flavorText(gameState,enemyMonster.name);
+	battleLoop(player,enemyMonster);	//1st battle start
 	gameState="battle 2";
 	enemyMonster=enemyConstructor(questPath[1],gameState);
 	flavorText(gameState,enemyMonster.name);
@@ -41,39 +42,72 @@ console.log("The battle begins!");
 let phase=0;
 let playerCurrentDefense=player.baseDefense*.5;
 let enemyCurrentDefense=enemyMonster.baseDefense*.5;
+let enemyCurrentHP=enemyMonster.maxHP;
 let playerNextTurn=player.baseInitiative;
 let enemyNextTurn=enemyMonster.baseInitiative;
-while (player.maxHP<1||enemyMonster.maxHP<1){	//while nobody has lost all hp
+while (player.maxHP>1 && enemyCurrentHP>1){	//while nobody has lost all hp
 		let turnOutcome=determineTurn(playerNextTurn,enemyNextTurn);
 		if (turnOutcome==="Player Turn"){
 			phase=playerNextTurn;
 			let offenseRatio=playerDetermineOffense();
-			let actionNumber=playerChooseNumberOfActions(offenseRatio,player.baseInitiative,enemyNextTurn);
+			playerCurrentDefense=determineCurrentDefense(offenseRatio,player.baseDefense);
+			let actionNumber=playerChooseNumberOfActions(offenseRatio,player.baseInitiative,enemyNextTurn,phase);
+			playerNextTurn=playerFindTurnOffsets(offenseRatio,player.baseInitiative,actionNumber);//set next turn
+			let damageOutput=damageCalculate(offenseRatio,actionNumber,player.baseAttackPower,enemyCurrentDefense);//get damage
+			console.log(enemyMonster.name+" took"+damageOutput+" damage!");
+			enemyCurrentHP=enemyCurrentHP-damageOutput;
 		}
 		else
 		{
 			phase=enemyNextTurn;
+			let offenseRatio=enemyDetermineOffense(enemyMonster.maxHP,enemyCurrentHP);
 		}
 		console.log("Phase: "+phase);
 
 	}
 
 }
+function enemyDetermineOffense(maxHP,enemyCurrentHP,ratio00,ratio25,ratio50,ratio75){
+	let offenseRatio=0;
+	if (enemyCurrentHP>0){
+		let hpRatio=maxHP/enemyCurrentHP;
+		if (hpRatio>.0){
+			offenseRatio=ratio00;
+		}
+		if (hpRatio>.24){
+			offenseRatio=ratio25;
+		}
+		if (hpRatio>.49){
+			offenseRatio=ratio50;
+		}
+		if (hpRatio>.74){
+			offenseRatio=ratio75;
+		}
+		offenseRatio=offenseRatio-(diceRollAnySides(16));
+
+	}
+	return offenseRatio;
+}
+
+function damageCalculate(offenseRatio,actionNumber,attackerBasePower,targetCurrentDefense){
+	let damageOutput=(attackerBasePower+((offenseRatio*.01)*(attackerBasePower)))*targetCurrentDefense;
+	return damageOutput;
+}
 
 function determineCurrentDefense(offenseRatio,baseDefense){
 	let currentDefense=.1*(100-offenseRatio)*baseDefense;
 	return currentDefense;
 }
-function playerChooseNumberOfActions(offenseRatio,playerInit,enemyNextAt){
-	let oneAction=playerFindTurnOffsets(offenseRatio,playerInit,1);
-	let twoAction=playerFindTurnOffsets(offenseRatio,playerInit,2);
-	let threeAction=playerFindTurnOffsets(offenseRatio,playerInit,3);
+function playerChooseNumberOfActions(offenseRatio,playerInit,enemyNextAt,phase){
+	let oneAction=playerFindTurnOffsets(offenseRatio,playerInit,1,phase);
+	let twoAction=playerFindTurnOffsets(offenseRatio,playerInit,2,phase);
+	let threeAction=playerFindTurnOffsets(offenseRatio,playerInit,3,phase);
 	let numberOfActions=prompt("Enter a number between 1-3 to determine how many times you will attack.\nMore attacks push your next turn further into the future:\n"+"1:Next Turn at Phase "+oneAction+"\n2:Next Turn at Phase "+twoAction+"\n3:Next Turn at Phase "+threeAction+"\nEnemies Next Turn at Phase "+enemyNextAt);
 	return numberOfActions;
 }
-function playerFindTurnOffsets(playerInit,offenseRatio,numberOfActions){
+function playerFindTurnOffsets(playerInit,offenseRatio,numberOfActions,phase){
 	let turnOffset=Math.floor(playerInit+(numberOfActions*((playerInit*.5)*(offenseRatio*.1))));
-	return turnOffset;
+	return turnOffset+phase;
 }
 
 function playerDetermineOffense(){
@@ -83,7 +117,7 @@ function playerDetermineOffense(){
 
 function determineTurn(playerInit,enemyInit){
 	let turnOutcome="";
-	if (playerInit<enemyIni){
+	if (playerInit<enemyInit){
 		turnOutcome="Player Turn";
 	}
 	else if (playerInit===enemyInit){
@@ -123,7 +157,7 @@ function enemyConstructor(enemyID,gameState){
 			offenseRatio00:90,
 			baseAttackPower:12,
 			baseDefense:.03,
-			baseInitiative:20,
+			baseInitiative:230,
 		};
 		break;
 		case 2:
