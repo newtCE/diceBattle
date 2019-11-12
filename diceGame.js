@@ -41,11 +41,14 @@ function battleLoop(player,enemyMonster){
 console.log("The battle begins!");
 let phase=0;
 let playerCurrentDefense=player.baseDefense*.5;
+let playerCurrentHP=player.maxHP;
 let enemyCurrentDefense=enemyMonster.baseDefense*.5;
 let enemyCurrentHP=enemyMonster.maxHP;
 let playerNextTurn=player.baseInitiative;
 let enemyNextTurn=enemyMonster.baseInitiative;
-while (player.maxHP>1 && enemyCurrentHP>1){	//while nobody has lost all hp
+while (playerCurrentHP>1 && enemyCurrentHP>1){	//while nobody has lost all hp
+		console.log("Player has "+playerCurrentHP+" HP");
+		console.log(enemyMonster.name+" has "+enemyCurrentHP+" HP");
 		let turnOutcome=determineTurn(playerNextTurn,enemyNextTurn);
 		if (turnOutcome==="Player Turn"){
 			phase=playerNextTurn;
@@ -54,19 +57,44 @@ while (player.maxHP>1 && enemyCurrentHP>1){	//while nobody has lost all hp
 			let actionNumber=playerChooseNumberOfActions(offenseRatio,player.baseInitiative,enemyNextTurn,phase);
 			playerNextTurn=playerFindTurnOffsets(offenseRatio,player.baseInitiative,actionNumber);//set next turn
 			let damageOutput=damageCalculate(offenseRatio,actionNumber,player.baseAttackPower,enemyCurrentDefense);//get damage
+			if (actionNumber>1){
+			console.log("Player strikes "+enemyMonster.name+" "+actionNumber+" times!");
+			}
+			else{
+			console.log("Player strikes "+enemyMonster.name+"!");
+			}
 			console.log(enemyMonster.name+" took"+damageOutput+" damage!");
 			enemyCurrentHP=enemyCurrentHP-damageOutput;
 		}
 		else
 		{
 			phase=enemyNextTurn;
-			let offenseRatio=enemyDetermineOffense(enemyMonster.maxHP,enemyCurrentHP);
+			let offenseRatio=enemyDetermineOffense(enemyMonster.maxHP,enemyCurrentHP,enemyMonster.offenseRatio00,enemyMonster.offenseRatio25,enemyMonster.offenseRatio50,enemyMonster.offenseRatio75);
+			enemyCurrentDefense=determineCurrentDefense(offenseRatio,enemyMonster.baseDefense);
+			let actionNumber=diceRollAnySides(3);
+			enemyNextTurn=enemyChooseNumberOfActions(offenseRatio,enemyMonster.baseInitiative,phase);
+			let damageOutput=damageCalculate(offenseRatio,actionNumber,enemyMonster.baseAttackPower,playerCurrentDefense);//get damage
+			if (actionNumber>1){
+			console.log(enemyMonster.name+" strikes "+actionNumber+" times!");
+			}
+			else{
+			console.log(enemyMonster.name+" strikes!");
+			}
+			console.log("Player took "+damageOutput+" damage!");
+			playerCurrentHP=playerCurrentHP-damageOutput;
+
 		}
 		console.log("Phase: "+phase);
-
 	}
 
 }
+function enemyChooseNumberOfActions(offenseRatio,numberOfActions,baseInitiative,phase){
+
+	let turnOffset=Math.floor(baseInitiative+(numberOfActions*((baseInitiative*.5)*(offenseRatio*.1))));
+	return turnOffset+phase;
+
+}
+
 function enemyDetermineOffense(maxHP,enemyCurrentHP,ratio00,ratio25,ratio50,ratio75){
 	let offenseRatio=0;
 	if (enemyCurrentHP>0){
