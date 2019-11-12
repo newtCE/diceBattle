@@ -52,10 +52,11 @@ while (playerCurrentHP>1 && enemyCurrentHP>1){	//while nobody has lost all hp
 		let turnOutcome=determineTurn(playerNextTurn,enemyNextTurn);
 		if (turnOutcome==="Player Turn"){
 			phase=playerNextTurn;
+			console.log("Phase: "+phase);
 			let offenseRatio=playerDetermineOffense();
 			playerCurrentDefense=determineCurrentDefense(offenseRatio,player.baseDefense);
 			let actionNumber=playerChooseNumberOfActions(offenseRatio,player.baseInitiative,enemyNextTurn,phase);
-			playerNextTurn=playerFindTurnOffsets(offenseRatio,player.baseInitiative,actionNumber);//set next turn
+			playerNextTurn=playerFindTurnOffsets(offenseRatio,player.baseInitiative,actionNumber,phase);//set next turn
 			let damageOutput=damageCalculate(offenseRatio,actionNumber,player.baseAttackPower,enemyCurrentDefense);//get damage
 			if (actionNumber>1){
 			console.log("Player strikes "+enemyMonster.name+" "+actionNumber+" times!");
@@ -69,10 +70,11 @@ while (playerCurrentHP>1 && enemyCurrentHP>1){	//while nobody has lost all hp
 		else
 		{
 			phase=enemyNextTurn;
+			console.log("Phase: "+phase);
 			let offenseRatio=enemyDetermineOffense(enemyMonster.maxHP,enemyCurrentHP,enemyMonster.offenseRatio00,enemyMonster.offenseRatio25,enemyMonster.offenseRatio50,enemyMonster.offenseRatio75);
 			enemyCurrentDefense=determineCurrentDefense(offenseRatio,enemyMonster.baseDefense);
 			let actionNumber=diceRollAnySides(3);
-			enemyNextTurn=enemyChooseNumberOfActions(offenseRatio,enemyMonster.baseInitiative,phase);
+			enemyNextTurn=enemyChooseNumberOfActions(offenseRatio,actionNumber,enemyMonster.baseInitiative,phase);
 			let damageOutput=damageCalculate(offenseRatio,actionNumber,enemyMonster.baseAttackPower,playerCurrentDefense);//get damage
 			if (actionNumber>1){
 			console.log(enemyMonster.name+" strikes "+actionNumber+" times!");
@@ -84,14 +86,14 @@ while (playerCurrentHP>1 && enemyCurrentHP>1){	//while nobody has lost all hp
 			playerCurrentHP=playerCurrentHP-damageOutput;
 
 		}
-		console.log("Phase: "+phase);
+		
 	}
 
 }
 function enemyChooseNumberOfActions(offenseRatio,numberOfActions,baseInitiative,phase){
 
-	let turnOffset=Math.floor(baseInitiative+(numberOfActions*((baseInitiative*.5)*(offenseRatio*.1))));
-	return turnOffset+phase;
+	let turnOffset=phase+(Math.floor(baseInitiative+(numberOfActions*((baseInitiative*.5)*(offenseRatio*.1)))));
+	return turnOffset;
 
 }
 
@@ -134,8 +136,8 @@ function playerChooseNumberOfActions(offenseRatio,playerInit,enemyNextAt,phase){
 	return numberOfActions;
 }
 function playerFindTurnOffsets(playerInit,offenseRatio,numberOfActions,phase){
-	let turnOffset=Math.floor(playerInit+(numberOfActions*((playerInit*.5)*(offenseRatio*.1))));
-	return turnOffset+phase;
+	let turnOffset=phase+(Math.floor(playerInit+(numberOfActions*((playerInit*.5)*(offenseRatio*.1)))));
+	return turnOffset;
 }
 
 function playerDetermineOffense(){
