@@ -41,11 +41,52 @@ console.log("The battle begins!");
 let phase=0;
 let playerNextTurn=player.baseInitiative;
 let enemyNextTurn=enemyMonster.baseInitiative;
-if (player.maxHP<1||enemyMonster.maxHP<1){
-		determineTurn(playerNextTurn,enemyNextTurn);
+while (player.maxHP<1||enemyMonster.maxHP<1){	//while nobody has lost all hp
+		let turnOutcome=determineTurn(playerNextTurn,enemyNextTurn);
+		if (turnOutcome==="Player Turn"){
+			phase=playerNextTurn;
+			let offenseRatio=playerDetermineOffense();
+			let actionNumber=playerChooseNumberOfActions(offenseRatio,player.baseInitiative,enemyNextTurn);
+		}
+		else
+		{
+			phase=enemyNextTurn;
+		}
+		console.log("Phase: "+phase);
 
 	}
 
+}
+function playerChooseNumberOfActions(offenseRatio,playerInit,enemyNextAt){
+	let oneAction=playerFindTurnOffsets(offenseRatio,playerInit,1);
+	let twoAction=playerFindTurnOffsets(offenseRatio,playerInit,2);
+	let threeAction=playerFindTurnOffsets(offenseRatio,playerInit,3);
+	let numberOfActions=prompt("Enter a number between 1-3 to determine how many times you will attack.\nMore attacks push your next turn further into the future:\n"+"1:Next Turn at Phase "+oneAction+"\n2:Next Turn at Phase "+twoAction+"\n3:Next Turn at Phase "+threeAction+"\nEnemies Next Turn at Phase "+enemyNextAt);
+}
+function playerFindTurnOffsets(playerInit,offenseRatio,numberOfActions){
+	let turnOffset=Math.floor(playerInit+(numberOfActions*((playerInit*.5)*(offenseRatio*.1))));
+	return turnOffset;
+}
+
+function playerDetermineOffense(){
+	let offensePower=prompt("Enter a number between 1-100 to determine much of your energy will be used for offense. The remaining energy will be used for your defense this turn");
+	return Math.floor(offensePower);
+}
+
+function determineTurn(playerInit,enemyInit){
+	let turnOutcome="";
+	if (playerInit<enemyIni){
+		turnOutcome="Player Turn";
+	}
+	else if (playerInit===enemyInit){
+		turnOutcome="Player Turn";
+	}
+	else
+	{
+		turnOutcome="Enemy Turn";
+	}
+	console.log(turnOutcome);
+	return turnOutcome;
 }
 
 function enemyConstructor(enemyID,gameState){
