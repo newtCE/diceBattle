@@ -62,7 +62,7 @@ while (playerCurrentHP>1 && enemyCurrentHP>1){	//while nobody has lost all hp
 			let offenseRatio=playerDetermineOffense(playerCurrentHP,enemyCurrentHP,enemyNextTurn,phase);
 			playerCurrentDefense=determineCurrentDefense(offenseRatio,player.baseDefense);
 			let actionNumber=playerChooseNumberOfActions(offenseRatio,player.baseInitiative,enemyNextTurn,phase);
-			playerNextTurn=playerFindTurnOffsets(offenseRatio,player.baseInitiative,actionNumber,phase);//set next turn
+			playerNextTurn=playerFindTurnOffsets(player.baseInitiative,offenseRatio,actionNumber,phase);//set next turn
 			let damageOutput=damageCalculate(offenseRatio,actionNumber,player.baseAttackPower,enemyCurrentDefense);//get damage
 			if (actionNumber>1){
 			alert("Phase: "+phase+"\nPlayer strikes "+enemyMonster.name+" "+actionNumber+" times!\n"+enemyMonster.name+" took "+damageOutput+" damage!");
@@ -78,7 +78,7 @@ while (playerCurrentHP>1 && enemyCurrentHP>1){	//while nobody has lost all hp
 			let offenseRatio=enemyDetermineOffense(enemyMonster.maxHP,enemyCurrentHP,enemyMonster.offenseRatio00,enemyMonster.offenseRatio25,enemyMonster.offenseRatio50,enemyMonster.offenseRatio75);
 			enemyCurrentDefense=determineCurrentDefense(offenseRatio,enemyMonster.baseDefense);
 			let actionNumber=diceRollAnySides(3);
-			enemyNextTurn=enemyChooseNumberOfActions(offenseRatio,actionNumber,enemyMonster.baseInitiative,phase);
+			enemyNextTurn=enemyChooseNumberOfActions(enemyMonster.baseInitiative,offenseRatio,actionNumber,phase);
 			let damageOutput=damageCalculate(offenseRatio,actionNumber,enemyMonster.baseAttackPower,playerCurrentDefense);//get damage
 			if (actionNumber>1){
 			alert("Phase: "+phase+"\n"+enemyMonster.name+" strikes "+actionNumber+" times!\nPlayer took "+damageOutput+" damage!");
@@ -107,11 +107,12 @@ while (playerCurrentHP>1 && enemyCurrentHP>1){	//while nobody has lost all hp
 	}
 
 }
-function enemyChooseNumberOfActions(offenseRatio,numberOfActions,baseInitiative,phase){
+function enemyChooseNumberOfActions(baseInitiative,offenseRatio,numberOfActions,phase){
 
 	let turnOffset=baseInitiative*.5;
-	turnOffset=turnOffset*numberOfActions;
-	turnOffset=Math.floor(turnOffset+phase);
+	turnOffset=Math.floor(turnOffset*numberOfActions);
+	turnOffset=turnOffset+baseInitiative;
+	turnOffset=turnOffset+phase;
 	return turnOffset;
 
 }
@@ -156,9 +157,9 @@ function determineCurrentDefense(offenseRatio,baseDefense){
 	return currentDefense;
 }
 function playerChooseNumberOfActions(offenseRatio,playerInit,enemyNextAt,phase,){
-	let oneAction=playerFindTurnOffsets(offenseRatio,playerInit,1,phase);
-	let twoAction=playerFindTurnOffsets(offenseRatio,playerInit,2,phase);
-	let threeAction=playerFindTurnOffsets(offenseRatio,playerInit,3,phase);
+	let oneAction=playerFindTurnOffsets(playerInit,offenseRatio,1,phase);
+	let twoAction=playerFindTurnOffsets(playerInit,offenseRatio,2,phase);
+	let threeAction=playerFindTurnOffsets(playerInit,offenseRatio,3,phase);
 	let numberOfActions=-1;
 	while(numberOfActions<1||numberOfActions>3){
 		numberOfActions=prompt("Enter a number between 1-3 to determine how many times you will attack.\nMore attacks push your next turn further into the future:\n"+"1:Next Turn at Phase "+oneAction+"\n2:Next Turn at Phase "+twoAction+"\n3:Next Turn at Phase "+threeAction+"\nEnemies Next Turn at Phase "+enemyNextAt);
@@ -168,8 +169,9 @@ function playerChooseNumberOfActions(offenseRatio,playerInit,enemyNextAt,phase,)
 function playerFindTurnOffsets(playerInit,offenseRatio,numberOfActions,phase){
 	//let turnOffset=phase+(Math.floor(playerInit+(numberOfActions*((playerInit*.5)*(offenseRatio*.1)))));
 	let turnOffset=playerInit*.5;
-	turnOffset=turnOffset*numberOfActions;
-	turnOffset=Math.floor(turnOffset+phase);
+	turnOffset=Math.floor(turnOffset*numberOfActions);
+	turnOffset=turnOffset+playerInit;
+	turnOffset=turnOffset+phase;
 	return turnOffset;
 }
 
@@ -216,12 +218,12 @@ function enemyConstructor(enemyID,gameState){
 		case 1:
 			monster={
 			name: "Goblin",
-			maxHP: 80,
+			maxHP: 120,
 			offenseRatio75:60, 
 			offenseRatio50:80,
 			offenseRatio25:20,
 			offenseRatio00:90,
-			baseAttackPower:12,
+			baseAttackPower:16,
 			baseDefense:.3,
 			baseInitiative:20,
 		};
@@ -229,12 +231,12 @@ function enemyConstructor(enemyID,gameState){
 		case 2:
 			monster={
 			name: "Giant Centipede",
-			maxHP: 120,
+			maxHP: 160,
 			offenseRatio75:60,
 			offenseRatio50:80,
 			offenseRatio25:20,
 			offenseRatio00:90,
-			baseAttackPower:18,
+			baseAttackPower:32,
 			baseDefense:.6,
 			baseInitiative:40, 
 		};
@@ -242,12 +244,12 @@ function enemyConstructor(enemyID,gameState){
 		case 3:
 			monster={
 			name: "Goblin Mage",
-			maxHP: 90,
+			maxHP: 140,
 			offenseRatio75:60,
 			offenseRatio50:80,
 			offenseRatio25:20,
 			offenseRatio00:90,
-			baseAttackPower:14,
+			baseAttackPower:24,
 			baseDefense:.3,
 			baseInitiative:30,
 		};
@@ -255,12 +257,12 @@ function enemyConstructor(enemyID,gameState){
 		case 4:
 			monster={
 			name: "Bone Pile",
-			maxHP: 140,
+			maxHP: 180,
 			offenseRatio75:50,
 			offenseRatio50:50,
 			offenseRatio25:50,
 			offenseRatio00:50,
-			baseAttackPower:12,
+			baseAttackPower:16,
 			baseDefense:.7,
 			baseInitiative:60, 
 		};
@@ -268,12 +270,12 @@ function enemyConstructor(enemyID,gameState){
 		case 5:
 			monster={
 			name: "Constrictor",
-			maxHP: 160,
+			maxHP: 200,
 			offenseRatio75:40,
 			offenseRatio50:50,
 			offenseRatio25:60,
 			offenseRatio00:40,
-			baseAttackPower:16,
+			baseAttackPower:32,
 			baseDefense:.3,
 			baseInitiative:40,
 		};
@@ -281,12 +283,12 @@ function enemyConstructor(enemyID,gameState){
 		case 6:
 			monster={
 			name: "Troglodyte",
-			maxHP: 170,
+			maxHP: 220,
 			offenseRatio75:40,
 			offenseRatio50:60,
 			offenseRatio25:40,
 			offenseRatio00:40,
-			baseAttackPower:18,
+			baseAttackPower:24,
 			baseDefense:.3,
 			baseInitiative:30,
 		};
@@ -294,7 +296,7 @@ function enemyConstructor(enemyID,gameState){
 		case 7:
 			monster={
 			name: "Myrmage",
-			maxHP: 500,
+			maxHP: 600,
 			offenseRatio75:50,
 			offenseRatio50:60,
 			offenseRatio25:40,
@@ -307,7 +309,7 @@ function enemyConstructor(enemyID,gameState){
 		case 8:
 			monster={
 			name: "Chimera",
-			maxHP: 640,
+			maxHP: 840,
 			offenseRatio75:60,
 			offenseRatio50:80,
 			offenseRatio25:60,
@@ -320,12 +322,12 @@ function enemyConstructor(enemyID,gameState){
 		case 9:
 			monster={
 			name: "Ogre",
-			maxHP: 600,
+			maxHP: 700,
 			offenseRatio75:60,
 			offenseRatio50:80,
 			offenseRatio25:20,
 			offenseRatio00:90,
-			baseAttackPower:32,
+			baseAttackPower:48,
 			baseDefense:.5,
 			baseInitiative:120,
 		};
