@@ -1,6 +1,9 @@
 //write some functions for enemy behaviors
 
 function gameLoop(){
+	alert("Welcome to My Dice Generated RPG Battle Gauntlet!\nSoon you will roll dice to generate a short adventure to battle your way through!");
+	alert('Battles are fought 1 on 1. Turn order is governed by "Phase" which is a unit of time. If your Phase count matches the current Phase, it is your turn.\nDuring your turn you select how much of your energy will be dedicated to offense or defense, higher offense means lower defense.\nNext you select the number of times you will attack, each attack you perform will push the Phase of your next turn further into the future.');
+	alert("Try not to overextend yourself or leave yourself open for too long or the enemy will get many turns in a row with which to attack you.\nAfter 4 battles you will reach the end of your story...");
 	let gameState="beginning"; //this state used to move from phase to phase
 	let player={
 		maxHP: 120,
@@ -37,6 +40,7 @@ function gameLoop(){
 					if (player.maxHP===160){
 						gameState="ending";
 						flavorText(gameState,questPath[3]);	
+						alert("THE END");
 					}
 				}
 			}
@@ -223,7 +227,7 @@ function enemyConstructor(enemyID,gameState){
 			offenseRatio50:80,
 			offenseRatio25:20,
 			offenseRatio00:90,
-			baseAttackPower:16,
+			baseAttackPower:24,
 			baseDefense:.3,
 			baseInitiative:20,
 		};
@@ -236,7 +240,7 @@ function enemyConstructor(enemyID,gameState){
 			offenseRatio50:80,
 			offenseRatio25:20,
 			offenseRatio00:90,
-			baseAttackPower:32,
+			baseAttackPower:40,
 			baseDefense:.6,
 			baseInitiative:40, 
 		};
@@ -249,7 +253,7 @@ function enemyConstructor(enemyID,gameState){
 			offenseRatio50:80,
 			offenseRatio25:20,
 			offenseRatio00:90,
-			baseAttackPower:24,
+			baseAttackPower:32,
 			baseDefense:.3,
 			baseInitiative:30,
 		};
@@ -262,7 +266,7 @@ function enemyConstructor(enemyID,gameState){
 			offenseRatio50:50,
 			offenseRatio25:50,
 			offenseRatio00:50,
-			baseAttackPower:16,
+			baseAttackPower:32,
 			baseDefense:.7,
 			baseInitiative:60, 
 		};
@@ -275,7 +279,7 @@ function enemyConstructor(enemyID,gameState){
 			offenseRatio50:50,
 			offenseRatio25:60,
 			offenseRatio00:40,
-			baseAttackPower:32,
+			baseAttackPower:48,
 			baseDefense:.3,
 			baseInitiative:40,
 		};
@@ -288,7 +292,7 @@ function enemyConstructor(enemyID,gameState){
 			offenseRatio50:60,
 			offenseRatio25:40,
 			offenseRatio00:40,
-			baseAttackPower:24,
+			baseAttackPower:40,
 			baseDefense:.3,
 			baseInitiative:30,
 		};
@@ -297,11 +301,11 @@ function enemyConstructor(enemyID,gameState){
 			monster={
 			name: "Myrmage",
 			maxHP: 600,
-			offenseRatio75:50,
+			offenseRatio75:90,
 			offenseRatio50:60,
 			offenseRatio25:40,
 			offenseRatio00:40,
-			baseAttackPower:20,
+			baseAttackPower:48,
 			baseDefense:.2,
 			baseInitiative:60,
 		};
@@ -314,7 +318,7 @@ function enemyConstructor(enemyID,gameState){
 			offenseRatio50:80,
 			offenseRatio25:60,
 			offenseRatio00:50,
-			baseAttackPower:24,
+			baseAttackPower:56,
 			baseDefense:.35,
 			baseInitiative:80,
 		};
@@ -327,7 +331,7 @@ function enemyConstructor(enemyID,gameState){
 			offenseRatio50:80,
 			offenseRatio25:20,
 			offenseRatio00:90,
-			baseAttackPower:48,
+			baseAttackPower:64,
 			baseDefense:.5,
 			baseInitiative:120,
 		};
