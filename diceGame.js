@@ -16,8 +16,6 @@ function gameLoop(){
 	let fiendFolioNames=["","Goblin","Giant Centipede","Goblin Mage","Bone Pile","Constrictor","Troglodyte"];
 	console.log("Welcome to the beginning of the game.");
 	questPath=rollQuest();
-	console.log("Quest has been rolled.");
-	console.log(questPath);
 	window.setTimeout(flavorText(gameState,questPath[3]),1000);
 	gameState="battle 1";
 	let enemyMonster=enemyConstructor(questPath[0],gameState);
@@ -75,7 +73,7 @@ while (playerCurrentHP>1 && enemyCurrentHP>1){	//while nobody has lost all hp
 			else{
 			console.log("Player strikes "+enemyMonster.name+"!");
 			}
-			console.log(enemyMonster.name+" took"+damageOutput+" damage!");
+			console.log(enemyMonster.name+" took "+damageOutput+" damage!");
 			enemyCurrentHP=enemyCurrentHP-damageOutput;
 		}
 		else
@@ -119,7 +117,9 @@ while (playerCurrentHP>1 && enemyCurrentHP>1){	//while nobody has lost all hp
 }
 function enemyChooseNumberOfActions(offenseRatio,numberOfActions,baseInitiative,phase){
 
-	let turnOffset=phase+(Math.floor(baseInitiative+(numberOfActions*((baseInitiative*.5)*(offenseRatio*.1)))));
+	let turnOffset=baseInitiative*.5;
+	turnOffset=turnOffset*numberOfActions;
+	turnOffset=Math.floor(turnOffset+phase);
 	return turnOffset;
 
 }
@@ -167,16 +167,25 @@ function playerChooseNumberOfActions(offenseRatio,playerInit,enemyNextAt,phase){
 	let oneAction=playerFindTurnOffsets(offenseRatio,playerInit,1,phase);
 	let twoAction=playerFindTurnOffsets(offenseRatio,playerInit,2,phase);
 	let threeAction=playerFindTurnOffsets(offenseRatio,playerInit,3,phase);
-	let numberOfActions=prompt("Enter a number between 1-3 to determine how many times you will attack.\nMore attacks push your next turn further into the future:\n"+"1:Next Turn at Phase "+oneAction+"\n2:Next Turn at Phase "+twoAction+"\n3:Next Turn at Phase "+threeAction+"\nEnemies Next Turn at Phase "+enemyNextAt);
+	let numberOfActions=-1;
+	while(numberOfActions<1||numberOfActions>3){
+		numberOfActions=prompt("Enter a number between 1-3 to determine how many times you will attack.\nMore attacks push your next turn further into the future:\n"+"1:Next Turn at Phase "+oneAction+"\n2:Next Turn at Phase "+twoAction+"\n3:Next Turn at Phase "+threeAction+"\nEnemies Next Turn at Phase "+enemyNextAt);
+	}
 	return numberOfActions;
 }
 function playerFindTurnOffsets(playerInit,offenseRatio,numberOfActions,phase){
-	let turnOffset=phase+(Math.floor(playerInit+(numberOfActions*((playerInit*.5)*(offenseRatio*.1)))));
+	//let turnOffset=phase+(Math.floor(playerInit+(numberOfActions*((playerInit*.5)*(offenseRatio*.1)))));
+	let turnOffset=playerInit*.5;
+	turnOffset=turnOffset*numberOfActions;
+	turnOffset=Math.floor(turnOffset+phase);
 	return turnOffset;
 }
 
 function playerDetermineOffense(){
-	let offensePower=prompt("Enter a number between 1-100 to determine much of your energy will be used for offense. The remaining energy will be used for your defense this turn");
+	let offensePower=-1;
+	while(offensePower<1||offensePower>100){
+		offensePower=prompt("Enter a number between 1-100 to determine much of your energy will be used for offense. The remaining energy will be used for your defense this turn");
+	}
 	return Math.floor(offensePower);
 }
 
@@ -215,7 +224,7 @@ function enemyConstructor(enemyID,gameState){
 		case 1:
 			monster={
 			name: "Goblin",
-			maxHP: 70,
+			maxHP: 80,
 			offenseRatio75:60, 
 			offenseRatio50:80,
 			offenseRatio25:20,
@@ -228,7 +237,7 @@ function enemyConstructor(enemyID,gameState){
 		case 2:
 			monster={
 			name: "Giant Centipede",
-			maxHP: 70,
+			maxHP: 120,
 			offenseRatio75:60,
 			offenseRatio50:80,
 			offenseRatio25:20,
@@ -241,7 +250,7 @@ function enemyConstructor(enemyID,gameState){
 		case 3:
 			monster={
 			name: "Goblin Mage",
-			maxHP: 80,
+			maxHP: 90,
 			offenseRatio75:60,
 			offenseRatio50:80,
 			offenseRatio25:20,
@@ -254,7 +263,7 @@ function enemyConstructor(enemyID,gameState){
 		case 4:
 			monster={
 			name: "Bone Pile",
-			maxHP: 70,
+			maxHP: 140,
 			offenseRatio75:50,
 			offenseRatio50:50,
 			offenseRatio25:50,
@@ -267,7 +276,7 @@ function enemyConstructor(enemyID,gameState){
 		case 5:
 			monster={
 			name: "Constrictor",
-			maxHP: 70,
+			maxHP: 160,
 			offenseRatio75:40,
 			offenseRatio50:50,
 			offenseRatio25:60,
@@ -280,7 +289,7 @@ function enemyConstructor(enemyID,gameState){
 		case 6:
 			monster={
 			name: "Troglodyte",
-			maxHP: 70,
+			maxHP: 170,
 			offenseRatio75:40,
 			offenseRatio50:60,
 			offenseRatio25:40,
@@ -293,7 +302,7 @@ function enemyConstructor(enemyID,gameState){
 		case 7:
 			monster={
 			name: "Myrmage",
-			maxHP: 250,
+			maxHP: 500,
 			offenseRatio75:50,
 			offenseRatio50:60,
 			offenseRatio25:40,
@@ -306,7 +315,7 @@ function enemyConstructor(enemyID,gameState){
 		case 8:
 			monster={
 			name: "Chimera",
-			maxHP: 320,
+			maxHP: 640,
 			offenseRatio75:60,
 			offenseRatio50:80,
 			offenseRatio25:60,
@@ -319,7 +328,7 @@ function enemyConstructor(enemyID,gameState){
 		case 9:
 			monster={
 			name: "Ogre",
-			maxHP: 300,
+			maxHP: 600,
 			offenseRatio75:60,
 			offenseRatio50:80,
 			offenseRatio25:20,
@@ -404,47 +413,42 @@ switch(gameState){
 
 }
 function rollQuest(){
+	alert("You will now roll dice to determine the course of your quest.");
 	let questArray=[0];
 	let diceSides;
 	for(i=0;i<4;i++){
 		switch(i){
 			case 0:
+				alert("Roll your 1st D6");
 				diceSides=6		//roll battle 1
 			break;
 
 			case 1:
+				alert("Roll your 2nd D6");
 				diceSides=6		//roll battle 2
 			break;
 
 			case 2:
+				alert("Roll your 3rd D4");
 				diceSides=4		//roll battle 3
 			break;
 
 			case 3:
+				alert("Roll your 4th D4"); //it's actuall a d3..which would be a cylinder i suppose...
 				diceSides=3		//roll final boss
 			break;			
 		}
 		questArray[i]=diceRollAnySides(diceSides); //starts with d6 then to 3
-		console.log(questArray[i]);
+		alert("You rolled a "+questArray[i]);
 	}
+	alert("Quest has been rolled.\bRead the console window to embark...");
 	return questArray;
 }
 
 function diceRollAnySides(numberOfSides){
 	let rollOutcome=Math.floor((Math.random() * numberOfSides)+1);     // returns a number from 1 to the number of sides
 	return rollOutcome;
-	console.log(rollOutcome);
 }
 diceRollAnySides(8);
 
-function enemyActionChoose(){
-	let rollActionCount;
-}
-function goblinActionRoll(rollOutcome){
-
-}
-function fiendFolio(number,infoField){
-
-
-}
 gameLoop();	
