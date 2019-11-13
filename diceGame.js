@@ -13,8 +13,6 @@ function gameLoop(){
 	let enemyOffenseLevel;
 	let enemyDefenseLevel;
 	let questPath=[];
-	let fiendFolioNames=["","Goblin","Giant Centipede","Goblin Mage","Bone Pile","Constrictor","Troglodyte"];
-	console.log("Welcome to the beginning of the game.");
 	questPath=rollQuest();
 	window.setTimeout(flavorText(gameState,questPath[3]),1000);
 	gameState="battle 1";
@@ -61,52 +59,46 @@ while (playerCurrentHP>1 && enemyCurrentHP>1){	//while nobody has lost all hp
 		let turnOutcome=determineTurn(playerNextTurn,enemyNextTurn);
 		if (turnOutcome==="Player Turn"){
 			phase=playerNextTurn;
-			console.log("Phase: "+phase);
-			let offenseRatio=playerDetermineOffense();
+			let offenseRatio=playerDetermineOffense(playerCurrentHP,enemyCurrentHP,enemyNextTurn,phase);
 			playerCurrentDefense=determineCurrentDefense(offenseRatio,player.baseDefense);
 			let actionNumber=playerChooseNumberOfActions(offenseRatio,player.baseInitiative,enemyNextTurn,phase);
 			playerNextTurn=playerFindTurnOffsets(offenseRatio,player.baseInitiative,actionNumber,phase);//set next turn
 			let damageOutput=damageCalculate(offenseRatio,actionNumber,player.baseAttackPower,enemyCurrentDefense);//get damage
 			if (actionNumber>1){
-			console.log("Player strikes "+enemyMonster.name+" "+actionNumber+" times!");
+			alert("Phase: "+phase+"\nPlayer strikes "+enemyMonster.name+" "+actionNumber+" times!\n"+enemyMonster.name+" took "+damageOutput+" damage!");
 			}
 			else{
-			console.log("Player strikes "+enemyMonster.name+"!");
+			alert("Phase: "+phase+"\nPlayer strikes "+enemyMonster.name+"!\n"+enemyMonster.name+" took "+damageOutput+" damage!");
 			}
-			console.log(enemyMonster.name+" took "+damageOutput+" damage!");
 			enemyCurrentHP=enemyCurrentHP-damageOutput;
 		}
 		else
 		{
 			phase=enemyNextTurn;
-			console.log("Phase: "+phase);
 			let offenseRatio=enemyDetermineOffense(enemyMonster.maxHP,enemyCurrentHP,enemyMonster.offenseRatio00,enemyMonster.offenseRatio25,enemyMonster.offenseRatio50,enemyMonster.offenseRatio75);
 			enemyCurrentDefense=determineCurrentDefense(offenseRatio,enemyMonster.baseDefense);
 			let actionNumber=diceRollAnySides(3);
 			enemyNextTurn=enemyChooseNumberOfActions(offenseRatio,actionNumber,enemyMonster.baseInitiative,phase);
 			let damageOutput=damageCalculate(offenseRatio,actionNumber,enemyMonster.baseAttackPower,playerCurrentDefense);//get damage
 			if (actionNumber>1){
-			console.log(enemyMonster.name+" strikes "+actionNumber+" times!");
+			alert("Phase: "+phase+"\n"+enemyMonster.name+" strikes "+actionNumber+" times!\nPlayer took "+damageOutput+" damage!");
 			}
 			else{
-			console.log(enemyMonster.name+" strikes!");
+			alert("Phase: "+phase+"\n"+enemyMonster.name+" strikes!\nPlayer took "+damageOutput+" damage!");
 			}
-			console.log("Player took "+damageOutput+" damage!");
 			playerCurrentHP=playerCurrentHP-damageOutput;
 
 		}
 		
 	}
 	if (playerCurrentHP<1){
-		console.log("You were defeated!");
-		console.log("Game Over");
+		alert("You were defeated!\nGame Over");
 		return player;
 
 	}
 	else
 	{
-		console.log("The "+enemyMonster.name+" has been vanquished!");
-		console.log("You've gained a level!");
+		alert("The "+enemyMonster.name+" has been vanquished!\nYou've gained a level!");
 		player.maxHP=player.maxHP+10;
 		player.baseAttackPower=player.baseAttackPower+5;
 		player.baseDefense=player.baseDefense+.02;
@@ -163,7 +155,7 @@ function determineCurrentDefense(offenseRatio,baseDefense){
 	currentDefense=1-currentDefense;
 	return currentDefense;
 }
-function playerChooseNumberOfActions(offenseRatio,playerInit,enemyNextAt,phase){
+function playerChooseNumberOfActions(offenseRatio,playerInit,enemyNextAt,phase,){
 	let oneAction=playerFindTurnOffsets(offenseRatio,playerInit,1,phase);
 	let twoAction=playerFindTurnOffsets(offenseRatio,playerInit,2,phase);
 	let threeAction=playerFindTurnOffsets(offenseRatio,playerInit,3,phase);
@@ -181,10 +173,10 @@ function playerFindTurnOffsets(playerInit,offenseRatio,numberOfActions,phase){
 	return turnOffset;
 }
 
-function playerDetermineOffense(){
+function playerDetermineOffense(playerHP,enemyHP,enemyNextAt,phase){
 	let offensePower=-1;
 	while(offensePower<1||offensePower>100){
-		offensePower=prompt("Enter a number between 1-100 to determine much of your energy will be used for offense. The remaining energy will be used for your defense this turn");
+		offensePower=prompt("Phase: "+phase+"\nPLAYER TURN\nPlayer HP: "+playerHP+"\nEnemy HP: "+enemyHP+"\nEnemy Next Turn: "+enemyNextAt+"\nEnter a number between 1-100 to determine much of your energy will be used for offense. The remaining energy will be used for your defense this turn");
 	}
 	return Math.floor(offensePower);
 }
@@ -346,44 +338,44 @@ switch(gameState){
 	case "beginning":
 		switch(questDetail){ //setting description based on your boss roll
 			case 1:
-				console.log("You arrive at the mouth of a cavern recently unhidden by the receding tide. It is just as the fortune teller had predicted. You venture inside to meet your destiny.");
+				alert("You arrive at the mouth of a cavern recently unhidden by the receding tide. It is just as the fortune teller had predicted. You venture inside to meet your destiny.");
 			break;
 
 			case 2:
-				console.log("The forest is shrowded in mist but you advance with certainty, this is the hunting ground of the Chimera. You venture forth to meet your destiny.");
+				alert("The forest is shrowded in mist but you advance with certainty, this is the hunting ground of the Chimera. You venture forth to meet your destiny.");
 			break;
 
 			case 3:
-				console.log("You stand at the foot of an impressive, ancient tower. No traces remain of the adventurers who came before you. You venture inside to meet your destiny.");
+				alert("You stand at the foot of an impressive, ancient tower. No traces remain of the adventurers who came before you. You venture inside to meet your destiny.");
 			break;
 		}
 
 	break;
 
 	case "battle 1":
-				console.log("Before you appears a "+questDetail+" ready to attack!"); //when called place monster id
+				alert("Before you appears a "+questDetail+" ready to attack!"); //when called place monster id
 	break;
 
 	case "battle 2":
-				console.log("Your further advance is soon stopped by a "+questDetail+" ready to attack!"); //when called place monster id
+				alert("Your further advance is soon stopped by a "+questDetail+" ready to attack!"); //when called place monster id
 	break;
 
 	case "battle 3":
-				console.log("As you close in on your final destination, a "+questDetail+" appears ready to attack!"); //when called place monster id
+				alert("As you close in on your final destination, a "+questDetail+" appears ready to attack!"); //when called place monster id
 	break;
 
 	case "final battle":
 		switch(questDetail){ //setting description based on your boss roll
 			case 1:
-				console.log("You reach the innermost cavern, the silvery Myrmage arises before you. Its hostility is unmistakable.");
+				alert("You reach the innermost cavern, the silvery Myrmage arises before you. Its hostility is unmistakable.");
 			break;
 
 			case 2:
-				console.log("From the mists appears the massive shape of the Chimera. You ready yourself for combat.");
+				alert("From the mists appears the massive shape of the Chimera. You ready yourself for combat.");
 			break;
 
 			case 3:
-				console.log("Upon reaching the uppermost chamber of the tower, you discover the fabled Ogre. It appears to be ready for you.");
+				alert("Upon reaching the uppermost chamber of the tower, you discover the fabled Ogre. It appears to be ready for you.");
 			break;
 		}
 	break;
@@ -391,15 +383,15 @@ switch(gameState){
 	case "ending":
 		switch(questDetail){ //setting description based on your boss roll
 			case 1:
-				console.log("The Myrmage will no longer terrify the coastal village. You look upon the decades of plunder it leaves behind as your reward.");
+				alert("The Myrmage will no longer terrify the coastal village. You look upon the decades of plunder it leaves behind as your reward.");
 			break;
 
 			case 2:
-				console.log("The mists part just as the Chimera's death rattles cease to echo. The mythical beast is no more and you will be regarded as a hero.");
+				alert("The mists part just as the Chimera's death rattles cease to echo. The mythical beast is no more and you will be regarded as a hero.");
 			break;
 
 			case 3:
-				console.log("The Ogre collapses broken before you. The possesions of it's victims are all that remain of those who came before you. Closure will have to suffice.");
+				alert("The Ogre collapses broken before you. The possesions of it's victims are all that remain of those who came before you. Closure will have to suffice.");
 			break;
 		}
 	break;
@@ -441,7 +433,7 @@ function rollQuest(){
 		questArray[i]=diceRollAnySides(diceSides); //starts with d6 then to 3
 		alert("You rolled a "+questArray[i]);
 	}
-	alert("Quest has been rolled.\bRead the console window to embark...");
+	alert("Quest has been rolled & will now begin...");
 	return questArray;
 }
 
@@ -449,6 +441,3 @@ function diceRollAnySides(numberOfSides){
 	let rollOutcome=Math.floor((Math.random() * numberOfSides)+1);     // returns a number from 1 to the number of sides
 	return rollOutcome;
 }
-diceRollAnySides(8);
-
-gameLoop();	
