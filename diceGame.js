@@ -5,7 +5,7 @@ function gameLoop(){
 	let player={
 		maxHP: 120,
 		baseAttackPower:20,
-		baseDefense: .09,
+		baseDefense: .8,
 		baseInitiative: 25
 	}
 	let playerOffenseLevel;
@@ -88,6 +88,19 @@ while (playerCurrentHP>1 && enemyCurrentHP>1){	//while nobody has lost all hp
 		}
 		
 	}
+	if (playerCurrentHP<1){
+		console.log("You were defeated!");
+		console.log("Game Over");
+	}
+	else
+	{
+		console.log("The "+enemyMonster.name+" has been vanquished!");
+		console.log("You've gained a level!");
+		player.maxHP=player.maxHP+10;
+		player.baseAttackPower=player.baseAttackPower+5;
+		player.baseDefense=player.baseDefense+.02;
+		player.baseInitiative=player.baseInitiative-1;
+	}
 
 }
 function enemyChooseNumberOfActions(offenseRatio,numberOfActions,baseInitiative,phase){
@@ -120,12 +133,20 @@ function enemyDetermineOffense(maxHP,enemyCurrentHP,ratio00,ratio25,ratio50,rati
 }
 
 function damageCalculate(offenseRatio,actionNumber,attackerBasePower,targetCurrentDefense){
-	let damageOutput=(attackerBasePower+((offenseRatio*.01)*(attackerBasePower)))*targetCurrentDefense;
+	let damageOutput=offenseRatio*.01;
+	damageOutput=attackerBasePower*damageOutput;
+	damageOutput=damageOutput+attackerBasePower;
+	damageOutput=damageOutput*actionNumber;
+	damageOutput=damageOutput*targetCurrentDefense;
+	damageOutput=Math.floor(damageOutput);
 	return damageOutput;
 }
 
 function determineCurrentDefense(offenseRatio,baseDefense){
-	let currentDefense=.1*(100-offenseRatio)*baseDefense;
+	let currentDefense=100-offenseRatio;
+	currentDefense=currentDefense*0.01;
+	currentDefense=currentDefense*baseDefense;
+	currentDefense=1-currentDefense;
 	return currentDefense;
 }
 function playerChooseNumberOfActions(offenseRatio,playerInit,enemyNextAt,phase){
@@ -186,8 +207,8 @@ function enemyConstructor(enemyID,gameState){
 			offenseRatio25:20,
 			offenseRatio00:90,
 			baseAttackPower:12,
-			baseDefense:.03,
-			baseInitiative:230,
+			baseDefense:.3,
+			baseInitiative:20,
 		};
 		break;
 		case 2:
@@ -198,8 +219,8 @@ function enemyConstructor(enemyID,gameState){
 			offenseRatio50:80,
 			offenseRatio25:20,
 			offenseRatio00:90,
-			baseAttackPower:12,
-			baseDefense:.04,
+			baseAttackPower:18,
+			baseDefense:.6,
 			baseInitiative:40, 
 		};
 		break;
@@ -211,8 +232,8 @@ function enemyConstructor(enemyID,gameState){
 			offenseRatio50:80,
 			offenseRatio25:20,
 			offenseRatio00:90,
-			baseAttackPower:12,
-			baseDefense:.03,
+			baseAttackPower:14,
+			baseDefense:.3,
 			baseInitiative:30,
 		};
 		break;
@@ -225,7 +246,7 @@ function enemyConstructor(enemyID,gameState){
 			offenseRatio25:50,
 			offenseRatio00:50,
 			baseAttackPower:12,
-			baseDefense:.03,
+			baseDefense:.7,
 			baseInitiative:60, 
 		};
 		break;
@@ -237,8 +258,8 @@ function enemyConstructor(enemyID,gameState){
 			offenseRatio50:50,
 			offenseRatio25:60,
 			offenseRatio00:40,
-			baseAttackPower:12,
-			baseDefense:.03,
+			baseAttackPower:16,
+			baseDefense:.3,
 			baseInitiative:40,
 		};
 		break;
@@ -250,8 +271,8 @@ function enemyConstructor(enemyID,gameState){
 			offenseRatio50:60,
 			offenseRatio25:40,
 			offenseRatio00:40,
-			baseAttackPower:12,
-			baseDefense:.03,
+			baseAttackPower:18,
+			baseDefense:.3,
 			baseInitiative:30,
 		};
 		break;
@@ -263,8 +284,8 @@ function enemyConstructor(enemyID,gameState){
 			offenseRatio50:60,
 			offenseRatio25:40,
 			offenseRatio00:40,
-			baseAttackPower:12,
-			baseDefense:.02,
+			baseAttackPower:20,
+			baseDefense:.2,
 			baseInitiative:60,
 		};
 		break;
@@ -276,8 +297,8 @@ function enemyConstructor(enemyID,gameState){
 			offenseRatio50:80,
 			offenseRatio25:60,
 			offenseRatio00:50,
-			baseAttackPower:12,
-			baseDefense:.03,
+			baseAttackPower:24,
+			baseDefense:.35,
 			baseInitiative:80,
 		};
 		break;
@@ -289,8 +310,8 @@ function enemyConstructor(enemyID,gameState){
 			offenseRatio50:80,
 			offenseRatio25:20,
 			offenseRatio00:90,
-			baseAttackPower:12,
-			baseDefense:.04,
+			baseAttackPower:32,
+			baseDefense:.5,
 			baseInitiative:120,
 		};
 		break;																							
