@@ -22,27 +22,38 @@ function gameLoop(){
 	gameState="battle 1";
 	let enemyMonster=enemyConstructor(questPath[0],gameState);
 	flavorText(gameState,enemyMonster.name);
-	battleLoop(player,enemyMonster);	//1st battle start
-	gameState="battle 2";
-	enemyMonster=enemyConstructor(questPath[1],gameState);
-	flavorText(gameState,enemyMonster.name);
-	gameState="battle 3";
-	enemyMonster=enemyConstructor(questPath[2],gameState);
-	flavorText(gameState,enemyMonster.name);
-	gameState="final battle";
-	flavorText(gameState,questPath[3]);
-	gameState="ending";
-	flavorText(gameState,questPath[3]);	
-	//prompt("Welcome to the start of the game.");
+	player=battleLoop(player,enemyMonster);	//1st battle start
+	if (player.maxHP===130){
+			gameState="battle 2";
+			enemyMonster=enemyConstructor(questPath[1],gameState);
+			flavorText(gameState,enemyMonster.name);
+			player=battleLoop(player,enemyMonster);
+		if (player.maxHP===140){
+				gameState="battle 3";
+				enemyMonster=enemyConstructor(questPath[2],gameState);
+				flavorText(gameState,enemyMonster.name);
+				player=battleLoop(player,enemyMonster);
+			if (player.maxHP===150){
+					gameState="final battle";
+					enemyMonster=enemyConstructor(questPath[3],gameState);
+					flavorText(gameState,questPath[3]);
+					player=battleLoop(player,enemyMonster);
+					if (player.maxHP===160){
+						gameState="ending";
+						flavorText(gameState,questPath[3]);	
+					}
+				}
+			}
+		}
 	
 
 }
 function battleLoop(player,enemyMonster){
 console.log("The battle begins!");
 let phase=0;
-let playerCurrentDefense=player.baseDefense*.5;
+let playerCurrentDefense=1-(player.baseDefense*.5);
 let playerCurrentHP=player.maxHP;
-let enemyCurrentDefense=enemyMonster.baseDefense*.5;
+let enemyCurrentDefense=1-(enemyMonster.baseDefense*.5);
 let enemyCurrentHP=enemyMonster.maxHP;
 let playerNextTurn=player.baseInitiative;
 let enemyNextTurn=enemyMonster.baseInitiative;
@@ -91,6 +102,8 @@ while (playerCurrentHP>1 && enemyCurrentHP>1){	//while nobody has lost all hp
 	if (playerCurrentHP<1){
 		console.log("You were defeated!");
 		console.log("Game Over");
+		return player;
+
 	}
 	else
 	{
@@ -100,6 +113,7 @@ while (playerCurrentHP>1 && enemyCurrentHP>1){	//while nobody has lost all hp
 		player.baseAttackPower=player.baseAttackPower+5;
 		player.baseDefense=player.baseDefense+.02;
 		player.baseInitiative=player.baseInitiative-1;
+		return player;
 	}
 
 }
