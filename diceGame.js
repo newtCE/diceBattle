@@ -1,5 +1,3 @@
-//write some functions for enemy behaviors
-
 function gameLoop(){
 	alert("Welcome to My Dice Generated RPG Battle Gauntlet!\nSoon you will roll dice to generate a short adventure to battle your way through!");
 	alert('Battles are fought 1 on 1. Turn order is governed by "Phase" which is a unit of time. If your Phase count matches the current Phase, it is your turn.\nDuring your turn you select how much of your energy will be dedicated to offense or defense, higher offense means lower defense.\nNext you select the number of times you will attack, each attack you perform will push the Phase of your next turn further into the future.');
@@ -45,8 +43,6 @@ function gameLoop(){
 				}
 			}
 		}
-	
-
 }
 function battleLoop(player,enemyMonster){
 console.log("The battle begins!");
@@ -137,8 +133,50 @@ function enemyDetermineOffense(maxHP,enemyCurrentHP,ratio00,ratio25,ratio50,rati
 		if (hpRatio>.74){
 			offenseRatio=ratio75;
 		}
-		offenseRatio=offenseRatio-(diceRollAnySides(16));
+		let finalRollType=diceRollAnySides(10);
+		let rollSides=0;
+		switch (finalRollType){
+			case 1:
+				rollSides=4;
+			break;
 
+			case 2:
+				rollSides=6;
+			break;
+
+			case 3:
+				rollSides=8;
+			break;
+
+			case 4:
+				rollSides=8;
+			break;
+
+			case 5:
+				rollSides=10;
+			break;
+
+			case 6:
+				rollSides=10;
+			break;
+
+			case 7:
+				rollSides=10;
+			break;
+			
+			case 8:
+				rollSides=12;
+			break;
+
+			case 8:
+				rollSides=16;
+			break;
+
+			case 8:
+				rollSides=16;
+			break;							
+		}
+		offenseRatio=offenseRatio-(diceRollAnySides(rollSides));
 	}
 	return offenseRatio;
 }
@@ -171,14 +209,12 @@ function playerChooseNumberOfActions(offenseRatio,playerInit,enemyNextAt,phase,)
 	return numberOfActions;
 }
 function playerFindTurnOffsets(playerInit,offenseRatio,numberOfActions,phase){
-	//let turnOffset=phase+(Math.floor(playerInit+(numberOfActions*((playerInit*.5)*(offenseRatio*.1)))));
 	let turnOffset=playerInit*.5;
 	turnOffset=Math.floor(turnOffset*numberOfActions);
 	turnOffset=turnOffset+playerInit;
 	turnOffset=turnOffset+phase;
 	return turnOffset;
 }
-
 function playerDetermineOffense(playerHP,enemyHP,enemyNextAt,phase){
 	let offensePower=-1;
 	while(offensePower<1||offensePower>100){
@@ -186,7 +222,6 @@ function playerDetermineOffense(playerHP,enemyHP,enemyNextAt,phase){
 	}
 	return Math.floor(offensePower);
 }
-
 function determineTurn(playerInit,enemyInit){
 	let turnOutcome="";
 	if (playerInit<enemyInit){
@@ -355,7 +390,6 @@ switch(gameState){
 				alert("You stand at the foot of an impressive, ancient tower. No traces remain of the adventurers who came before you. You venture inside to meet your destiny.");
 			break;
 		}
-
 	break;
 
 	case "battle 1":
@@ -403,10 +437,7 @@ switch(gameState){
 	break;
 
 	case "game over":
-
 	break;
-
-
 }
 
 }
@@ -442,7 +473,6 @@ function rollQuest(){
 	alert("Quest has been rolled & will now begin...");
 	return questArray;
 }
-
 function diceRollAnySides(numberOfSides){
 	let rollOutcome=Math.floor((Math.random() * numberOfSides)+1);     // returns a number from 1 to the number of sides
 	return rollOutcome;
